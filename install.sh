@@ -123,6 +123,8 @@ PACKAGES=(
     qt5-qtwayland qt6-qtwayland nwg-look
     papirus-icon-theme jetbrains-mono-fonts fontawesome-fonts google-noto-sans-fonts
     unzip
+    # Used by keybinds / waybar / the toggle scripts:
+    nautilus btop tmux jq xrandr xdg-utils gtk3 python3 wireplumber nm-connection-editor
 )
 FAILED=()
 for pkg in "${PACKAGES[@]}"; do
@@ -212,6 +214,10 @@ Manual steps still needed:
   5. Claude Desktop (claude-desktop-unofficial) was not installed by this script either —
      it comes from a third-party repo (pkg.claude-desktop-debian.dev), not RPM Fusion/COPR.
      The .desktop override for it is now in place but inert until you install that app.
+  6. The F9/F10/F11 scratchpads launch Flatpaks (Discord, Spotify, Google Chrome for WhatsApp
+     Web), and F12 expects the Claude CLI at ~/.local/bin/claude. None of these are installed
+     here — install flatpak + the Flathub apps and the Claude CLI yourself. The Waybar OneDrive
+     module also needs the abraunegg `onedrive` client set up as a systemd user service.
 
 Re-check hyprland.lua's monitor block (hl.monitor outputs/positions/scale) — it hardcodes
 this machine's DP-1/DP-2 layout and 150% scale, which will be wrong on different hardware.
