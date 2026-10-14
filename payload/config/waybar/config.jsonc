@@ -114,7 +114,7 @@
     },
 
     "temperature": {
-        // Ryzen k10temp Tdie (real die temp; Tctl reads +10°C on a 2700X).
+        // k10temp Tdie (real die temp; Tctl includes an offset on some AMD CPUs).
         // Fixed PCI path because hwmonN numbering can change between boots.
         "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:18.3/hwmon",
         "input-filename": "temp2_input",
