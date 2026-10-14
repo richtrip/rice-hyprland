@@ -24,6 +24,33 @@ log()  { printf '\n\033[1;36m==>\033[0m %s\n' "$1"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$1"; }
 die()  { printf '\033[1;31mERROR:\033[0m %s\n' "$1"; exit 1; }
 
+STEP_FAILURES=()   # non-fatal steps that failed, reported at the end
+BACKUPS=()         # every path moved aside, listed if the script dies midway
+TMP_FILES=()       # temp files removed on exit
+
+on_exit() {
+    local rc=$?
+    ((${#TMP_FILES[@]})) && rm -f "${TMP_FILES[@]}"
+    if ((rc != 0)); then
+        printf '\033[1;31mInstall aborted (exit %d).\033[0m\n' "$rc" >&2
+        if ((${#BACKUPS[@]})); then
+            echo "Anything this run moved aside is still intact at:" >&2
+            printf '    %s\n' "${BACKUPS[@]}" >&2
+        fi
+    fi
+}
+trap on_exit EXIT
+
+# try "<description>" cmd...  — run a non-essential step; record failure instead of aborting.
+try() {
+    local desc="$1"; shift
+    if ! "$@"; then
+        warn "$desc failed — continuing."
+        STEP_FAILURES+=("$desc")
+        return 1
+    fi
+}
+
 confirm() {
     read -r -p "$1 [y/N] " reply
     [[ "$reply" =~ ^[Yy]$ ]]
@@ -45,26 +72,37 @@ backup_if_exists() {
     if [[ -e "$path" ]]; then
         warn "Backing up existing $path -> ${path}.bak-$TS"
         mv "$path" "${path}.bak-$TS"
+        BACKUPS+=("${path}.bak-$TS")
     fi
 }
 
 ### 1. RPM Fusion ############################################################
 log "Enabling RPM Fusion (free + nonfree)"
 if ! dnf repolist 2>/dev/null | grep -qi rpmfusion-free; then
-    sudo dnf install -y \
+    try "RPM Fusion repo setup" sudo dnf install -y \
         "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${FEDORA_VER}.noarch.rpm" \
-        "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm"
+        "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${FEDORA_VER}.noarch.rpm" || true
 else
     echo "RPM Fusion already enabled, skipping."
 fi
 
 ### 2. NVIDIA driver (only if an NVIDIA GPU is present) ######################
-if lspci | grep -qi nvidia; then
+HAVE_NVIDIA=0
+if command -v lspci >/dev/null 2>&1; then
+    lspci | grep -qi nvidia && HAVE_NVIDIA=1
+else
+    warn "lspci not found (install 'pciutils') — cannot auto-detect an NVIDIA GPU."
+    if confirm "Do you have an NVIDIA GPU and want the driver installed anyway?"; then
+        HAVE_NVIDIA=1
+    fi
+fi
+if ((HAVE_NVIDIA)); then
     log "NVIDIA GPU detected"
     if confirm "Install the NVIDIA driver (akmod-nvidia, xorg-x11-drv-nvidia-cuda)?"; then
-        sudo dnf install -y akmod-nvidia xorg-x11-drv-nvidia-cuda
-        warn "Secure Boot must be disabled (or the akmod kernel module signed) for the driver to load."
-        warn "A reboot is required after this script finishes, before Hyprland will run on NVIDIA."
+        if try "NVIDIA driver install" sudo dnf install -y akmod-nvidia xorg-x11-drv-nvidia-cuda; then
+            warn "Secure Boot must be disabled (or the akmod kernel module signed) for the driver to load."
+            warn "A reboot is required after this script finishes, before Hyprland will run on NVIDIA."
+        fi
     fi
 else
     echo "No NVIDIA GPU detected — skipping the driver step."
@@ -72,7 +110,7 @@ fi
 
 ### 3. Hyprland COPR ##########################################################
 log "Enabling Hyprland COPR (sdegler/hyprland)"
-sudo dnf copr enable -y sdegler/hyprland
+try "Hyprland COPR enable (sdegler/hyprland)" sudo dnf copr enable -y sdegler/hyprland || true
 
 ### 4. Package list ###########################################################
 log "Installing packages"
@@ -117,15 +155,31 @@ chmod +x "$HOME/.local/bin/"*.sh
 
 ### 7. Font ######################################################################
 NERD_FONT_VERSION="v3.3.0"
+# SHA-256 of JetBrainsMono.zip for the tag above (matches upstream's SHA-256.txt for the release).
+# Update this together with NERD_FONT_VERSION.
+NERD_FONT_SHA256="2d83782a350b604bfa70fce880604a41a7f77c3eec8f922f9cdc3c20952ddbe4"
 log "Downloading JetBrainsMono Nerd Font ($NERD_FONT_VERSION)"
 FONT_DIR="$HOME/.local/share/fonts/JetBrainsMonoNerd"
-backup_if_exists "$FONT_DIR"
-mkdir -p "$FONT_DIR"
-FONT_ZIP="$(mktemp --suffix=.zip)"
-curl -fL "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONT_VERSION}/JetBrainsMono.zip" -o "$FONT_ZIP"
-unzip -q -o "$FONT_ZIP" -d "$FONT_DIR" -x "*Windows Compatible*" "LICENSE*" "README*"
-rm -f "$FONT_ZIP"
-fc-cache -f "$HOME/.local/share/fonts" >/dev/null
+install_font() {
+    # Back up outside ~/.local/share/fonts so fontconfig doesn't index both copies.
+    if [[ -e "$FONT_DIR" ]]; then
+        local bak_root="$HOME/.local/share/font-backups"
+        mkdir -p "$bak_root"
+        warn "Backing up existing $FONT_DIR -> $bak_root/JetBrainsMonoNerd.bak-$TS"
+        mv "$FONT_DIR" "$bak_root/JetBrainsMonoNerd.bak-$TS"
+        BACKUPS+=("$bak_root/JetBrainsMonoNerd.bak-$TS")
+    fi
+    local zip
+    zip="$(mktemp --suffix=.zip)"
+    TMP_FILES+=("$zip")
+    curl -fL "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONT_VERSION}/JetBrainsMono.zip" -o "$zip" || return 1
+    echo "${NERD_FONT_SHA256}  $zip" | sha256sum -c --quiet - \
+        || { echo "Checksum mismatch for JetBrainsMono.zip" >&2; return 1; }
+    mkdir -p "$FONT_DIR" || return 1
+    unzip -q -o "$zip" -d "$FONT_DIR" -x "*Windows Compatible*" "LICENSE*" "README*" || return 1
+    fc-cache -f "$HOME/.local/share/fonts" >/dev/null || return 1
+}
+try "JetBrainsMono Nerd Font install" install_font || true
 
 ### 8. .desktop overrides ########################################################
 log "Installing .desktop overrides (Steam + Claude Desktop HiDPI scaling fixes)"
@@ -142,6 +196,10 @@ update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
 ### Done ##########################################################################
 log "Done."
+if ((${#STEP_FAILURES[@]})); then
+    warn "These non-fatal steps failed and need attention:"
+    printf '    %s\n' "${STEP_FAILURES[@]}"
+fi
 cat <<'EOF'
 
 Manual steps still needed:
