@@ -1,5 +1,17 @@
 # hyprland-rice
 
+> ## ⬇️ Download the latest release
+>
+> **[`hyprland-rice.tar.gz`](https://github.com/richtrip/rice-hyprland/raw/main/dist/hyprland-rice.tar.gz)**
+> — the installer, configs and this README in one tarball (built from `dist/`).
+>
+> ```sh
+> curl -LO https://github.com/richtrip/rice-hyprland/raw/main/dist/hyprland-rice.tar.gz
+> tar xzf hyprland-rice.tar.gz && cd hyprland-rice && ./install.sh
+> ```
+>
+> Fedora (dnf) only. See [Quick start](#quick-start) for prerequisites.
+
 Richard's Hyprland + Waybar + Rofi desktop rice, packaged from his Fedora 44 + NVIDIA
 (RTX 2080 Super) machine ("KILLER") so it can be reproduced on another box. It's a
 Catppuccin Mocha–themed Wayland desktop: Hyprland as the compositor, a floating Waybar
