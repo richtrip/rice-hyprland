@@ -69,7 +69,9 @@ from there — same content either way.
   sudo) and the Claude CLI via Anthropic's official installer (`https://claude.ai/install.sh`,
   downloaded then run). Run `claude` once afterwards to log in.
 - Optionally (own prompt) adds the unofficial Claude Desktop dnf repo and installs
-  `claude-desktop-unofficial`
+  `claude-desktop-unofficial`. It downloads the project's signing key, shows you its
+  fingerprint for confirmation, imports it with `rpm --import`, and makes sure the repo
+  file enforces `gpgcheck=1` with that key
 - Backs up anything it would overwrite (`<path>.bak-<timestamp>`) instead of deleting it
 
 Dark GTK theme and the Papirus-Dark icon theme aren't restored by install.sh at all —
@@ -109,7 +111,9 @@ running as a systemd user service; `install.sh` doesn't set that up.
 (`pkg.claude-desktop-debian.dev`, project: `aaddrick/claude-desktop-debian`) — an
 unofficial repackaging, not built or supported by Anthropic — not RPM Fusion or the
 Hyprland COPR. `install.sh` adds that repo and installs `claude-desktop-unofficial` only if
-you answer yes to its own prompt. The `.desktop` scaling override is installed either way;
+you answer yes to its own prompt. The project publishes no key fingerprint, so the installer
+shows the one it downloaded (`https://pkg.claude-desktop-debian.dev/KEY.gpg`) and asks you to
+confirm before importing it — trust on first use. The `.desktop` scaling override is installed either way;
 it's inert without the app.
 
 ## Full package list this installs
