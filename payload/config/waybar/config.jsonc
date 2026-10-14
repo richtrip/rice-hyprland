@@ -1,0 +1,183 @@
+// Waybar — floating top panel, Catppuccin Mocha
+// Docs: https://github.com/Alexays/Waybar/wiki
+{
+    "layer": "top",
+    "position": "top",
+    "height": 40,
+    "margin-top": 4,
+    "margin-left": 7,
+    "margin-right": 7,
+    "spacing": 6,
+    "reload_style_on_change": true,
+
+    "modules-left": ["custom/launcher", "hyprland/workspaces", "hyprland/window", "mpris"],
+    "modules-center": ["clock"],
+    "modules-right": ["group/system", "pulseaudio", "network", "privacy", "idle_inhibitor", "custom/onedrive", "tray", "custom/notification", "custom/power"],
+
+    "custom/launcher": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "rofi -show drun"
+    },
+
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "format-icons": {
+            "default": "",
+            "active": "",
+            "empty": ""
+        },
+        "persistent-workspaces": { "*": 5 },
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e-1\"})'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace = \"e+1\"})'"
+    },
+
+    "hyprland/window": {
+        "format": "{title}",
+        "max-length": 48,
+        "separate-outputs": true,
+        "icon": true,
+        "icon-size": 18,
+        "rewrite": { "": "Desktop" }
+    },
+
+    "clock": {
+        "format": "  {:%H:%M}",
+        "format-alt": "  {:%A %d %B %Y}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "month",
+            "weeks-pos": "left",
+            "on-scroll": 1,
+            "format": {
+                "months":   "<span color='#cba6f7'><b>{}</b></span>",
+                "days":     "<span color='#cdd6f4'>{}</span>",
+                "weeks":    "<span color='#6c7086'>W{}</span>",
+                "weekdays": "<span color='#89b4fa'><b>{}</b></span>",
+                "today":    "<span color='#f38ba8'><b><u>{}</u></b></span>"
+            }
+        },
+        "actions": {
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
+    },
+
+    "mpris": {
+        "format": "{status_icon}  {artist} — {title}",
+        "format-stopped": "",
+        "status-icons": {
+            "playing": "󰐊",
+            "paused": "󰏤"
+        },
+        "max-length": 40,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
+    },
+
+    "group/system": {
+        "orientation": "horizontal",
+        "modules": ["cpu", "memory", "temperature"]
+    },
+
+    "privacy": {
+        "icon-size": 16,
+        "icon-spacing": 6,
+        "transition-duration": 250,
+        "modules": [
+            { "type": "screenshare", "tooltip": true, "tooltip-icon-size": 20 },
+            { "type": "audio-in", "tooltip": true, "tooltip-icon-size": 20 }
+        ]
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        },
+        "tooltip-format-activated": "Idle inhibit: on (screen won't sleep/lock)",
+        "tooltip-format-deactivated": "Idle inhibit: off"
+    },
+
+    "cpu": {
+        "format": "  {usage}%",
+        "interval": 3,
+        "on-click": "pkill -f '^kitty --class btop' || kitty --class btop -e btop"
+    },
+
+    "memory": {
+        "format": "󰍛  {percentage}%",
+        "interval": 5,
+        "tooltip-format": "{used:0.1f} GiB used of {total:0.1f} GiB"
+    },
+
+    "temperature": {
+        // Ryzen k10temp Tdie (real die temp; Tctl reads +10°C on a CPU).
+        // Fixed PCI path because hwmonN numbering can change between boots.
+        "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:18.3/hwmon",
+        "input-filename": "temp2_input",
+        "format": "󰔏  {temperatureC}°",
+        "critical-threshold": 85,
+        "interval": 5
+    },
+
+    "pulseaudio": {
+        "format": "{icon}  {volume}%",
+        "format-muted": "󰝟  muted",
+        "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+        "scroll-step": 5,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-click-right": "pavucontrol"
+    },
+
+    "network": {
+        "format-ethernet": "󰈀  {ipaddr}",
+        "format-wifi": "󰖩  {essid}",
+        "format-disconnected": "󰖪  offline",
+        "tooltip-format": "{ifname}  ↓ {bandwidthDownBytes}  ↑ {bandwidthUpBytes}",
+        "interval": 5,
+        "on-click-right": "nm-connection-editor"
+    },
+
+    "custom/onedrive": {
+        "exec": "~/.config/waybar/scripts/onedrive-status.sh",
+        "return-type": "json",
+        "interval": 10,
+        "format": "{text}",
+        "on-click": "systemctl --user is-active -q onedrive && kitty --title 'OneDrive log' journalctl --user -u onedrive -f -n 50 || systemctl --user start onedrive",
+        "on-click-right": "xdg-open ~/OneDrive"
+    },
+
+    "tray": {
+        "icon-size": 18,
+        "spacing": 10
+    },
+
+    "custom/notification": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+            "notification": "󱅫",
+            "none": "󰂚",
+            "dnd-notification": "󰂛",
+            "dnd-none": "󰂛",
+            "inhibited-notification": "󱅫",
+            "inhibited-none": "󰂚",
+            "dnd-inhibited-notification": "󰂛",
+            "dnd-inhibited-none": "󰂛"
+        },
+        "return-type": "json",
+        "exec": "swaync-client -swb",
+        "on-click": "swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+
+    "custom/power": {
+        "format": "󰐥",
+        "tooltip": false,
+        "on-click": "pidof wlogout || wlogout -b 5 -T 600 -B 600"
+    }
+}

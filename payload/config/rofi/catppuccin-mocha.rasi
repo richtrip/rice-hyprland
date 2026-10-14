@@ -1,0 +1,135 @@
+/* Catppuccin Mocha theme for Rofi */
+
+* {
+    base:      #1e1e2ebf;
+    mantle:    #181825;
+    surface0:  #313244;
+    surface1:  #45475a;
+    overlay0:  #6c7086;
+    text:      #cdd6f4;
+    subtext0:  #a6adc8;
+    mauve:     #cba6f7;
+    blue:      #89b4fa;
+    lavender:  #b4befe;
+    red:       #f38ba8;
+
+    font:             "JetBrainsMono Nerd Font 12";
+    background-color: transparent;
+    text-color:       @text;
+    margin:           0;
+    padding:          0;
+    spacing:          0;
+}
+
+window {
+    location:         center;
+    width:            640px;
+    border:           1px;
+    border-color:     #b4befe40;
+    border-radius:    9px;
+    background-color: @base;
+}
+
+mainbox {
+    padding:  18px;
+    spacing:  14px;
+    children: [ inputbar, message, listview, mode-switcher ];
+}
+
+inputbar {
+    padding:          12px 16px;
+    spacing:          12px;
+    border-radius:    6px;
+    background-color: #31324499;
+    children:         [ prompt, entry ];
+}
+
+prompt {
+    text-color: @mauve;
+    font:       "JetBrainsMono Nerd Font Bold 12";
+}
+
+entry {
+    placeholder:       "Search…";
+    placeholder-color: @overlay0;
+    cursor:            text;
+}
+
+message {
+    padding:          10px 14px;
+    border-radius:    5px;
+    background-color: #31324466;
+}
+
+textbox {
+    text-color: @subtext0;
+}
+
+listview {
+    lines:        8;
+    columns:      1;
+    fixed-height: true;
+    scrollbar:    false;
+    spacing:      4px;
+    cycle:        true;
+}
+
+element {
+    padding:       10px 14px;
+    spacing:       14px;
+    border-radius: 5px;
+    cursor:        pointer;
+}
+
+element normal.normal,
+element alternate.normal {
+    background-color: transparent;
+}
+
+element selected.normal {
+    background-color: #cba6f726;
+    border:           0 0 0 3px;
+    border-color:     @mauve;
+}
+
+element normal.urgent,
+element alternate.urgent {
+    text-color: @red;
+}
+
+element normal.active,
+element alternate.active {
+    text-color: @blue;
+}
+
+element-icon {
+    size:   28px;
+    cursor: inherit;
+}
+
+element-text {
+    vertical-align: 0.5;
+    text-color:     inherit;
+    cursor:         inherit;
+}
+
+element selected.normal element-text {
+    text-color: @lavender;
+}
+
+mode-switcher {
+    spacing: 8px;
+}
+
+button {
+    padding:          8px;
+    border-radius:    5px;
+    text-color:       @overlay0;
+    background-color: #31324466;
+    cursor:           pointer;
+}
+
+button selected {
+    text-color:       @mantle;
+    background-color: @mauve;
+}
