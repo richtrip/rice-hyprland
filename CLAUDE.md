@@ -3,7 +3,8 @@
 Packaged Hyprland + Waybar + Rofi desktop rice from User's Fedora 44 + NVIDIA
 (GPU) machine, plus an installer that reproduces it on another Fedora box.
 This repo is the installer/config package itself — it is not a running application,
-and nothing in it is built or tested by a CI pipeline.
+and the only CI is a GitHub Actions workflow that syntax-checks the shell scripts and builds/publishes
+the release tarball (see `.github/workflows/release.yml` below); nothing here is functionally tested.
 
 ## Layout
 
