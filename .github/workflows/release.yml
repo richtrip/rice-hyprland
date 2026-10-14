@@ -20,8 +20,13 @@ jobs:
 
       - name: Syntax-check shell scripts
         run: |
+          # Pick the checker from the shebang: some *.sh files (keybind-cheatsheet.sh) are Python.
           for f in install.sh scripts/*.sh payload/local-bin/*.sh payload/config/waybar/scripts/*.sh; do
-            bash -n "$f"
+            if head -n1 "$f" | grep -q python; then
+              python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "$f"
+            else
+              bash -n "$f"
+            fi
           done
 
       - name: Build tarball
