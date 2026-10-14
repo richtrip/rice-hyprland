@@ -64,6 +64,14 @@ from there — same content either way.
 - Downloads the JetBrainsMono Nerd Font (pinned release tag, needs internet) — it's
   fetched rather than vendored so this repo and tarball stay well under GitHub's 100M
   per-file push limit (the font alone is ~230M uncompressed)
+- Optionally (each behind its own prompt) installs the F9-F12 scratchpad dependencies:
+  the Discord, Spotify and Google Chrome Flatpaks (user installation from Flathub, no
+  sudo) and the Claude CLI via Anthropic's official installer (`https://claude.ai/install.sh`,
+  downloaded then run). Run `claude` once afterwards to log in.
+- Optionally (own prompt) adds the unofficial Claude Desktop dnf repo and installs
+  `claude-desktop-unofficial`. It downloads the project's signing key, shows you its
+  fingerprint for confirmation, imports it with `rpm --import`, and makes sure the repo
+  file enforces `gpgcheck=1` with that key
 - Backs up anything it would overwrite (`<path>.bak-<timestamp>`) instead of deleting it
 
 Dark GTK theme and the Papirus-Dark icon theme aren't restored by install.sh at all —
@@ -96,10 +104,17 @@ sudo snapper -c home create-config /home
 sudo sed -i 's/^ALLOW_USERS=.*/ALLOW_USERS="richard"/' /etc/snapper/configs/root /etc/snapper/configs/home
 ```
 
-**Claude Desktop.** Comes from a third-party repo (`pkg.claude-desktop-debian.dev`),
-not RPM Fusion or the Hyprland COPR, so it's intentionally left out of the automated
-package list. The `.desktop` scaling override is installed either way, it's just inert
-until you add that repo and install the app yourself.
+**OneDrive module.** The Waybar OneDrive module needs the abraunegg `onedrive` client
+running as a systemd user service; `install.sh` doesn't set that up.
+
+**Claude Desktop is opt-in.** It comes from a community repo
+(`pkg.claude-desktop-debian.dev`, project: `aaddrick/claude-desktop-debian`) — an
+unofficial repackaging, not built or supported by Anthropic — not RPM Fusion or the
+Hyprland COPR. `install.sh` adds that repo and installs `claude-desktop-unofficial` only if
+you answer yes to its own prompt. The project publishes no key fingerprint, so the installer
+shows the one it downloaded (`https://pkg.claude-desktop-debian.dev/KEY.gpg`) and asks you to
+confirm before importing it — trust on first use. The `.desktop` scaling override is installed either way;
+it's inert without the app.
 
 ## Full package list this installs
 
@@ -111,6 +126,8 @@ cliphist wl-clipboard grim slurp swappy playerctl
 pavucontrol network-manager-applet
 qt5-qtwayland qt6-qtwayland nwg-look
 papirus-icon-theme jetbrains-mono-fonts fontawesome-fonts google-noto-sans-fonts
+unzip
+flatpak nautilus btop tmux jq xrandr xdg-utils gtk3 python3 wireplumber nm-connection-editor
 ```
 
 Fedora package names drift between releases — `install.sh` reports (but doesn't abort
