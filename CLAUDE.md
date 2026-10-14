@@ -108,3 +108,10 @@ in `install.sh`: the F9–F11 Flatpaks, the Claude CLI, and Claude Desktop (comm
 repo `pkg.claude-desktop-debian.dev`, signing key shown for confirmation and imported,
 `gpgcheck=1` enforced). Keep any new third-party step opt-in, non-fatal and documented
 in the README the same way.
+
+Destructive steps follow the same rule. The Firefox removal (step 11: `dnf remove firefox`,
+then Chrome set as the default browser) is opt-in, and deleting the leftover Firefox
+profile/cache directories is a second, separate prompt — this is a deliberate exception to
+the "back up instead of delete" convention, requested by the owner because the profiles are
+unused. It must run after the Chrome Flatpak step so there is a browser to make the default,
+and it never touches anything outside the three listed Mozilla directories.

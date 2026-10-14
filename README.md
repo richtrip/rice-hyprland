@@ -87,6 +87,12 @@ from there — same content either way.
   `claude-desktop-unofficial`. It downloads the project's signing key, shows you its
   fingerprint for confirmation, imports it with `rpm --import`, and makes sure the repo
   file enforces `gpgcheck=1` with that key
+- Optionally (own prompt) removes the Fedora Firefox RPM and, if the Chrome Flatpak is
+  installed, makes Chrome the default browser (what Super+B opens). A second, separate
+  prompt offers to permanently delete the leftover Firefox profile and cache data
+  (`~/.mozilla`, `~/.config/mozilla`, `~/.cache/mozilla` — bookmarks, logins and history
+  included); it is skipped if Firefox is still running. Declining the Chrome install in the
+  Flatpak step leaves no default browser set, and the installer warns about it
 - Backs up anything it would overwrite (`<path>.bak-<timestamp>`) instead of deleting it
 
 Dark GTK theme and the Papirus-Dark icon theme aren't restored by install.sh at all —

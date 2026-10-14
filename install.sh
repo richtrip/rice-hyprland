@@ -289,6 +289,64 @@ if confirm "Add that repo and install claude-desktop-unofficial?"; then
     try "Claude Desktop (unofficial) install" install_claude_desktop || true
 fi
 
+### 11. Remove Mozilla Firefox (RPM) and make Chrome the default browser ##########
+# Fedora ships Firefox as an RPM. This is destructive, so it is opt-in, and the profile
+# data purge is a separate, second prompt. Runs after step 9 so Chrome (Flatpak) exists
+# to become the default browser.
+CHROME_DESKTOP_ID="com.google.Chrome.desktop"
+# Everything Firefox leaves behind in $HOME (profiles, bookmarks, logins, history, caches).
+FIREFOX_USER_DATA=(
+    "$HOME/.mozilla"
+    "$HOME/.config/mozilla"
+    "$HOME/.cache/mozilla"
+)
+
+remove_firefox() {
+    sudo dnf remove -y firefox
+}
+
+set_chrome_default_browser() {
+    if ! command -v flatpak >/dev/null 2>&1 || ! flatpak info com.google.Chrome >/dev/null 2>&1; then
+        warn "Chrome (Flatpak) is not installed, so no default browser was set — Super+B needs one."
+        warn "Install a browser, then run: xdg-settings set default-web-browser <app>.desktop"
+        return 1
+    fi
+    # Flatpak's export dirs are only added to XDG_DATA_DIRS at login, so add them for this call.
+    local dirs="$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    XDG_DATA_DIRS="$dirs" xdg-settings set default-web-browser "$CHROME_DESKTOP_ID" || return 1
+    [[ "$(XDG_DATA_DIRS="$dirs" xdg-settings get default-web-browser)" == "$CHROME_DESKTOP_ID" ]]
+}
+
+purge_firefox_data() {
+    if pgrep -x firefox >/dev/null 2>&1; then
+        warn "Firefox is still running — close it and delete these yourself if you want them gone:"
+        printf '    %s\n' "${FIREFOX_USER_DATA[@]}"
+        return 1
+    fi
+    [[ -n "${HOME:-}" && "$HOME" == /* && "$HOME" != "/" ]] || return 1
+    local p
+    for p in "${FIREFOX_USER_DATA[@]}"; do
+        [[ -e "$p" ]] && { echo "Deleting $p"; rm -rf -- "$p" || return 1; }
+    done
+    return 0
+}
+
+log "Mozilla Firefox"
+if rpm -q firefox >/dev/null 2>&1; then
+    if confirm "Remove Mozilla Firefox (RPM) and make Chrome the default browser?"; then
+        if try "Firefox removal" remove_firefox; then
+            try "Set Chrome as default browser" set_chrome_default_browser || true
+            echo "Leftover Firefox data (permanent delete, bookmarks/logins/history included):"
+            printf '    %s\n' "${FIREFOX_USER_DATA[@]}"
+            if confirm "Delete that Firefox profile and cache data?"; then
+                try "Delete Firefox profile data" purge_firefox_data || true
+            fi
+        fi
+    fi
+else
+    echo "Firefox RPM is not installed — nothing to remove."
+fi
+
 ### Done ##########################################################################
 log "Done."
 if ((${#STEP_FAILURES[@]})); then
