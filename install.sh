@@ -231,6 +231,34 @@ if confirm "Install the Claude CLI via Anthropic's official installer (https://c
     try "Claude CLI install" install_claude_cli || true
 fi
 
+### 10. Claude Desktop (unofficial community build) ##############################
+# Third-party repo (https://github.com/aaddrick/claude-desktop-debian) — NOT built or
+# supported by Anthropic. Ships the `claude-desktop-unofficial` package that the
+# payload/applications/claude-desktop-unofficial.desktop override targets.
+CLAUDE_DESKTOP_REPO_URL="https://pkg.claude-desktop-debian.dev/rpm/claude-desktop-unofficial.repo"
+CLAUDE_DESKTOP_REPO_FILE="/etc/yum.repos.d/claude-desktop-unofficial.repo"
+
+install_claude_desktop() {
+    local repo
+    repo="$(mktemp --suffix=.repo)"
+    TMP_FILES+=("$repo")
+    curl -fsSL "$CLAUDE_DESKTOP_REPO_URL" -o "$repo" || return 1
+    if [[ -e "$CLAUDE_DESKTOP_REPO_FILE" ]]; then
+        warn "Backing up existing $CLAUDE_DESKTOP_REPO_FILE -> ${CLAUDE_DESKTOP_REPO_FILE}.bak-$TS"
+        sudo mv "$CLAUDE_DESKTOP_REPO_FILE" "${CLAUDE_DESKTOP_REPO_FILE}.bak-$TS" || return 1
+        BACKUPS+=("${CLAUDE_DESKTOP_REPO_FILE}.bak-$TS")
+    fi
+    sudo install -m 644 "$repo" "$CLAUDE_DESKTOP_REPO_FILE" || return 1
+    sudo dnf install -y claude-desktop-unofficial
+}
+
+log "Claude Desktop (unofficial community build)"
+echo "This adds a third-party dnf repo (pkg.claude-desktop-debian.dev). It is a community"
+echo "repackaging, not an Anthropic product. Review the repo file if you want to be careful."
+if confirm "Add that repo and install claude-desktop-unofficial?"; then
+    try "Claude Desktop (unofficial) install" install_claude_desktop || true
+fi
+
 ### Done ##########################################################################
 log "Done."
 if ((${#STEP_FAILURES[@]})); then
@@ -246,9 +274,9 @@ Manual steps still needed:
      if you want that safety net, same as the original machine.
   4. Snapper (btrfs snapshots) was NOT automated here — it's specific to btrfs subvolumes
      named like the source machine's. See README.md's "Snapper" section if you want it.
-  5. Claude Desktop (claude-desktop-unofficial) was not installed by this script either —
-     it comes from a third-party repo (pkg.claude-desktop-debian.dev), not RPM Fusion/COPR.
-     The .desktop override for it is now in place but inert until you install that app.
+  5. Claude Desktop (claude-desktop-unofficial) comes from a third-party repo
+     (pkg.claude-desktop-debian.dev) and is installed in step 10 only if you said yes.
+     The .desktop override is in place either way, but inert without the app.
   6. The Waybar OneDrive module needs the abraunegg `onedrive` client set up as a systemd
      user service — not automated. (The F9-F12 apps are handled in step 9 if you said yes;
      if you declined, F9-F11 need the Discord/Spotify/Chrome Flatpaks and F12 needs
