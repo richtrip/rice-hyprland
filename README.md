@@ -96,6 +96,12 @@ sudo snapper -c home create-config /home
 sudo sed -i 's/^ALLOW_USERS=.*/ALLOW_USERS="richard"/' /etc/snapper/configs/root /etc/snapper/configs/home
 ```
 
+**Scratchpad apps and the OneDrive module.** The F9/F10/F11 toggles launch Flatpaks
+(`com.discordapp.Discord`, `com.spotify.Client`, `com.google.Chrome` for WhatsApp Web) and
+F12 runs the Claude CLI from `~/.local/bin/claude`; none of those are installed by
+`install.sh` (Flatpak remotes and a third-party CLI install are left to you). The Waybar
+OneDrive module likewise needs the `onedrive` client running as a systemd user service.
+
 **Claude Desktop.** Comes from a third-party repo (`pkg.claude-desktop-debian.dev`),
 not RPM Fusion or the Hyprland COPR, so it's intentionally left out of the automated
 package list. The `.desktop` scaling override is installed either way, it's just inert
@@ -111,6 +117,8 @@ cliphist wl-clipboard grim slurp swappy playerctl
 pavucontrol network-manager-applet
 qt5-qtwayland qt6-qtwayland nwg-look
 papirus-icon-theme jetbrains-mono-fonts fontawesome-fonts google-noto-sans-fonts
+unzip
+nautilus btop tmux jq xrandr xdg-utils gtk3 python3 wireplumber nm-connection-editor
 ```
 
 Fedora package names drift between releases — `install.sh` reports (but doesn't abort
