@@ -124,7 +124,7 @@ PACKAGES=(
     papirus-icon-theme jetbrains-mono-fonts fontawesome-fonts google-noto-sans-fonts
     unzip
     # Used by keybinds / waybar / the toggle scripts:
-    nautilus btop tmux jq xrandr xdg-utils gtk3 python3 wireplumber nm-connection-editor
+    flatpak nautilus btop tmux jq xrandr xdg-utils gtk3 python3 wireplumber nm-connection-editor
 )
 FAILED=()
 for pkg in "${PACKAGES[@]}"; do
@@ -196,6 +196,41 @@ for f in "$PAYLOAD/applications/"*.desktop; do
 done
 update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
 
+### 9. F9-F12 scratchpad apps ###################################################
+# F9/F10/F11 launch Flatpaks (see ~/.local/bin/toggle-*.sh); F12 runs ~/.local/bin/claude.
+# Flatpaks go in the per-user installation, so no sudo is needed. These are third-party
+# downloads (Flathub, claude.ai), so each is confirmed separately.
+FLATPAK_APPS=(com.discordapp.Discord com.spotify.Client com.google.Chrome)
+
+install_flatpaks() {
+    command -v flatpak >/dev/null 2>&1 || { echo "flatpak is not installed." >&2; return 1; }
+    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || return 1
+    flatpak install --user -y flathub "${FLATPAK_APPS[@]}"
+}
+
+install_claude_cli() {
+    if [[ -x "$HOME/.local/bin/claude" ]]; then
+        echo "Claude CLI already present at ~/.local/bin/claude, skipping."
+        return 0
+    fi
+    local script
+    script="$(mktemp --suffix=.sh)"
+    TMP_FILES+=("$script")
+    # Download first, then run, rather than piping curl straight into bash.
+    curl -fsSL https://claude.ai/install.sh -o "$script" || return 1
+    bash "$script" || return 1
+    [[ -x "$HOME/.local/bin/claude" ]] \
+        || { echo "Installer finished but ~/.local/bin/claude was not created." >&2; return 1; }
+}
+
+log "Scratchpad apps (F9-F12)"
+if confirm "Install Discord, Spotify and Google Chrome (WhatsApp Web) as user Flatpaks from Flathub?"; then
+    try "Flatpak apps (Discord, Spotify, Chrome)" install_flatpaks || true
+fi
+if confirm "Install the Claude CLI via Anthropic's official installer (https://claude.ai/install.sh)?"; then
+    try "Claude CLI install" install_claude_cli || true
+fi
+
 ### Done ##########################################################################
 log "Done."
 if ((${#STEP_FAILURES[@]})); then
@@ -214,10 +249,10 @@ Manual steps still needed:
   5. Claude Desktop (claude-desktop-unofficial) was not installed by this script either —
      it comes from a third-party repo (pkg.claude-desktop-debian.dev), not RPM Fusion/COPR.
      The .desktop override for it is now in place but inert until you install that app.
-  6. The F9/F10/F11 scratchpads launch Flatpaks (Discord, Spotify, Google Chrome for WhatsApp
-     Web), and F12 expects the Claude CLI at ~/.local/bin/claude. None of these are installed
-     here — install flatpak + the Flathub apps and the Claude CLI yourself. The Waybar OneDrive
-     module also needs the abraunegg `onedrive` client set up as a systemd user service.
+  6. The Waybar OneDrive module needs the abraunegg `onedrive` client set up as a systemd
+     user service — not automated. (The F9-F12 apps are handled in step 9 if you said yes;
+     if you declined, F9-F11 need the Discord/Spotify/Chrome Flatpaks and F12 needs
+     ~/.local/bin/claude. Run `claude` once to log in.)
 
 Re-check hyprland.lua's monitor block (hl.monitor outputs/positions/scale) — it hardcodes
 this machine's DP-1/DP-2 layout and 150% scale, which will be wrong on different hardware.
