@@ -5,7 +5,7 @@
 # with that machine's own unrelated home directory contents, or just fail outright.
 #
 # After running this, `git diff` to see what changed, then commit, then run
-# build-dist.sh to refresh dist/hyprland-rice.tar.gz to match.
+# build-dist.sh if you want a local test tarball (releases are built by CI on a v* tag).
 
 set -euo pipefail
 
@@ -33,4 +33,4 @@ for f in steam.desktop claude-desktop-unofficial.desktop; do
 done
 
 echo
-echo "Done. Review with 'git diff', commit, then run scripts/build-dist.sh."
+echo "Done. Review with 'git diff', commit and push."

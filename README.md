@@ -1,5 +1,19 @@
 # hyprland-rice
 
+> ## ⬇️ Download the latest release
+>
+> **[`hyprland-rice.tar.gz`](https://github.com/richtrip/rice-hyprland/releases/latest/download/hyprland-rice.tar.gz)**
+> — the installer, configs and this README in one tarball, attached to the
+> [latest GitHub Release](https://github.com/richtrip/rice-hyprland/releases/latest)
+> (with a `SHA256SUMS` file to verify it).
+>
+> ```sh
+> curl -LO https://github.com/richtrip/rice-hyprland/releases/latest/download/hyprland-rice.tar.gz
+> tar xzf hyprland-rice.tar.gz && cd hyprland-rice && ./install.sh
+> ```
+>
+> Fedora (dnf) only. See [Quick start](#quick-start) for prerequisites.
+
 Richard's Hyprland + Waybar + Rofi desktop rice, packaged from his Fedora 44 + NVIDIA
 (RTX 2080 Super) machine ("KILLER") so it can be reproduced on another box. It's a
 Catppuccin Mocha–themed Wayland desktop: Hyprland as the compositor, a floating Waybar
@@ -23,8 +37,8 @@ git clone https://github.com/richtrip/rice-hyprland.git
 cd rice-hyprland
 ./install.sh
 
-# Option B — just grab the prebuilt tarball, no git needed
-curl -LO https://github.com/richtrip/rice-hyprland/raw/main/dist/hyprland-rice.tar.gz
+# Option B — just grab the latest release tarball, no git needed
+curl -LO https://github.com/richtrip/rice-hyprland/releases/latest/download/hyprland-rice.tar.gz
 tar xzf hyprland-rice.tar.gz
 cd hyprland-rice
 ./install.sh
@@ -46,12 +60,13 @@ payload/              the actual config tree, mirrors a real $HOME layout
   systemd-user/        -> ~/.config/systemd/user
 scripts/
   sync-from-live.sh    DESKTOP-ONLY. Refreshes payload/ from this machine's live configs.
-  build-dist.sh        Repo-only, safe anywhere. Tars install.sh+README+payload into dist/.
-dist/hyprland-rice.tar.gz   prebuilt, downloadable copy of the above three things
+  build-dist.sh        Repo-only, safe anywhere. Tars install.sh+README+payload into dist/
+                       (git-ignored; CI builds the published copy).
+.github/workflows/release.yml   checks PRs; on a v* tag, publishes the tarball as a GitHub Release
 ```
 
 Two ways to consume this repo on a new machine: `git clone` it and run `./install.sh`
-directly, or just download `dist/hyprland-rice.tar.gz`, extract it, and run `./install.sh`
+directly, or just download the release tarball, extract it, and run `./install.sh`
 from there — same content either way.
 
 ## What install.sh does automatically
@@ -140,9 +155,22 @@ On the live desktop machine:
 ./scripts/sync-from-live.sh   # pulls fresh configs from ~/.config etc. into payload/
 git diff                      # review what actually changed
 git add -A && git commit
-./scripts/build-dist.sh       # refreshes dist/hyprland-rice.tar.gz to match
-git add dist/hyprland-rice.tar.gz && git commit
+git push
 ```
+
+## Publishing a release
+
+The tarball is built by CI, not committed. After merging to `main`, tag it:
+
+```sh
+git tag v1.1.0 && git push origin v1.1.0
+```
+
+`.github/workflows/release.yml` then builds `hyprland-rice.tar.gz` plus a `SHA256SUMS` file
+and attaches them to a new GitHub Release, which the download link at the top of this page
+always points to. (The link has nothing to serve until the first release exists.)
+To test the archive locally, run `./scripts/build-dist.sh` — output lands in the
+git-ignored `dist/`.
 
 `sync-from-live.sh` is desktop-only — it reads this machine's real `~/.config`, so it's
 meaningless (and potentially destructive to `payload/`) run anywhere else, including a

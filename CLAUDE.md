@@ -19,11 +19,17 @@ and nothing in it is built or tested by a CI pipeline.
   `payload/` with the sandbox's own unrelated files. Nothing in a cloud session
   should ever invoke this script.
 - `scripts/build-dist.sh` — **safe anywhere.** Reads only files already in the repo
-  (`install.sh`, `README.md`, `payload/`) and tars them into `dist/hyprland-rice.tar.gz`.
-  This is the one to run after editing `payload/` directly in a cloud session.
-- `dist/hyprland-rice.tar.gz` — the tracked, downloadable mirror of the above three
-  things. Keep it in sync with `payload/`/`install.sh`/`README.md` by rerunning
-  `scripts/build-dist.sh` and committing the result whenever those change.
+  (`install.sh`, `README.md`, `payload/`) and tars them into `dist/hyprland-rice.tar.gz`
+  (reproducible output; `dist/` is git-ignored).
+  Use it to sanity-check that the archive builds; do not commit its output.
+- `.github/workflows/release.yml` — CI. On PRs/pushes to `main` it runs `bash -n` over
+  the shell scripts and builds the tarball. Pushing a `v*` tag builds
+  `hyprland-rice.tar.gz` + `SHA256SUMS` and publishes them as a GitHub Release; the
+  README's download link targets `/releases/latest/download/hyprland-rice.tar.gz`.
+  The tarball is **not** tracked in git (`dist/` is git-ignored) — there is nothing to
+  rebuild or commit after editing `payload/`, `install.sh` or `README.md`. Keep the
+  asset name `hyprland-rice.tar.gz` stable or the README link breaks. Cutting a release
+  is the user's call: don't push tags unless asked.
 
 ## Critical gotchas when editing payload/config/hypr/hyprland.lua
 
@@ -73,7 +79,7 @@ and why so it's easy to revert.
   deleting it — preserve that pattern if you add new install steps.
 - The Nerd Font is downloaded from a pinned `ryanoasis/nerd-fonts` release tag
   (`NERD_FONT_VERSION` near the top of the font step), not vendored, specifically to
-  keep this repo and `dist/hyprland-rice.tar.gz` under GitHub's 100M per-file push
+  keep this repo and the release tarball under GitHub's 100M per-file push
   limit. If asked to bump the font version, update that variable and confirm the
   release tag and asset filename (`JetBrainsMono.zip`) still match upstream.
 - Never add install steps that assume `sudo` is passwordless — this installer always
