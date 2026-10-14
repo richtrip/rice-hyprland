@@ -98,7 +98,13 @@ the specific keys required (`dconf dump /org/gnome/desktop/interface/`), never `
 
 ## Things intentionally not automated (see README.md for detail)
 
-GNOME fallback session, snapper/btrfs snapshot setup (filesystem-layout-specific),
-and Claude Desktop (third-party repo, not RPM Fusion/COPR). Don't silently add
-automation for these without flagging the tradeoff — they were left manual on
-purpose.
+GNOME fallback session and snapper/btrfs snapshot setup (filesystem-layout-specific),
+plus the Waybar OneDrive client (`onedrive` service, interactive Microsoft login). Don't
+silently add automation for these without flagging the tradeoff — they were left manual
+on purpose.
+
+Third-party installs that ARE automated, but only behind their own confirmation prompt
+in `install.sh`: the F9–F11 Flatpaks, the Claude CLI, and Claude Desktop (community
+repo `pkg.claude-desktop-debian.dev`, signing key shown for confirmation and imported,
+`gpgcheck=1` enforced). Keep any new third-party step opt-in, non-fatal and documented
+in the README the same way.
