@@ -254,11 +254,11 @@ local mainMod = "SUPER"
 
 -- Apps and menus
 hl.bind(mainMod .. " + Return",       hl.dsp.exec_cmd(terminal),    { desc = "Terminal" })
-hl.bind("F12", hl.dsp.exec_cmd("/home/richard/.local/bin/toggle-claude-term.sh"), { desc = "Claude CLI (toggle)" })
-hl.bind("F11", hl.dsp.exec_cmd("/home/richard/.local/bin/toggle-spotify.sh"), { desc = "Spotify (toggle)" })
-hl.bind("F10", hl.dsp.exec_cmd("/home/richard/.local/bin/toggle-discord.sh"), { desc = "Discord (toggle)" })
-hl.bind("F9", hl.dsp.exec_cmd("/home/richard/.local/bin/toggle-whatsapp.sh"), { desc = "WhatsApp (toggle)" })
-hl.bind(mainMod .. " + SHIFT + slash", hl.dsp.exec_cmd("/home/richard/.local/bin/keybind-cheatsheet.sh"), { desc = "Keybind cheat-sheet" })
+hl.bind("F12", hl.dsp.exec_cmd("~/.local/bin/toggle-claude-term.sh"), { desc = "Claude CLI (toggle)" })
+hl.bind("F11", hl.dsp.exec_cmd("~/.local/bin/toggle-spotify.sh"), { desc = "Spotify (toggle)" })
+hl.bind("F10", hl.dsp.exec_cmd("~/.local/bin/toggle-discord.sh"), { desc = "Discord (toggle)" })
+hl.bind("F9", hl.dsp.exec_cmd("~/.local/bin/toggle-whatsapp.sh"), { desc = "WhatsApp (toggle)" })
+hl.bind(mainMod .. " + SHIFT + slash", hl.dsp.exec_cmd("~/.local/bin/keybind-cheatsheet.sh"), { desc = "Keybind cheat-sheet" })
 hl.bind(mainMod .. " + Space",        hl.dsp.exec_cmd(launcher),    { desc = "App launcher" })
 hl.bind(mainMod .. " + Tab",          hl.dsp.exec_cmd(windows),     { desc = "Window switcher" })
 hl.bind(mainMod .. " + E",            hl.dsp.exec_cmd(fileManager), { desc = "Files" })

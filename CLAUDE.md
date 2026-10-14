@@ -1,7 +1,7 @@
 # hyprland-rice
 
-Packaged Hyprland + Waybar + Rofi desktop rice from Richard's Fedora 44 + NVIDIA
-(RTX 2080 Super) machine, plus an installer that reproduces it on another Fedora box.
+Packaged Hyprland + Waybar + Rofi desktop rice from a Fedora 44 + NVIDIA
+desktop, plus an installer that reproduces it on another Fedora box.
 This repo is the installer/config package itself — it is not a running application,
 and the only CI is a GitHub Actions workflow that syntax-checks the shell scripts and builds/publishes
 the release tarball (see `.github/workflows/release.yml` below); nothing here is functionally tested.
@@ -65,7 +65,7 @@ stock Hyprland's dispatcher API either — it's a specific fork with a Lua confi
 `hyprland.lua`'s `hl.monitor(...)` calls hardcode the source machine's output names
 (`DP-1`, `DP-2`), resolution (3840x2160@60), 150% scale, and left/right layout, and
 other files assume an NVIDIA GPU. These are facts about one specific machine
-("KILLER"), not generic defaults — don't "fix" or genericize them unless asked to
+(the source desktop), not generic defaults — don't "fix" or genericize them unless asked to
 adapt the rice for different hardware, and if asked, say explicitly what you changed
 and why so it's easy to revert.
 
