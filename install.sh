@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Installs the Hyprland/Waybar/Rofi rice (packaged from richard's Fedora 44 box)
 # onto a new machine. Run this from inside the extracted archive directory:
-#   tar xzf hyprland-rice-*.tar.gz && cd hyprland-rice-* && ./install.sh
+#   tar xzf hyprland-rice.tar.gz && cd hyprland-rice && ./install.sh
 #
 # This script:
 #  - installs Fedora packages (RPM Fusion, a Hyprland COPR, then the rice's dnf list)
