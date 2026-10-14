@@ -1,0 +1,8 @@
+[Unit]
+Description=Hyprland compositor session
+Documentation=man:systemd.special(7)
+# Bring up graphical-session.target (it refuses manual starts), so services that
+# depend on it, like xdg-desktop-portal, can run. Started/stopped by hyprland.lua.
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target

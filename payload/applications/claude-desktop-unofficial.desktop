@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Claude
+Exec=/usr/bin/claude-desktop-unofficial --password-store=gnome-libsecret --force-device-scale-factor=2.0 %u
+Icon=claude-desktop-unofficial
+Type=Application
+Terminal=false
+Categories=Office;Utility;
+MimeType=x-scheme-handler/claude;
+StartupWMClass=com.anthropic.Claude

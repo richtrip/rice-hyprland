@@ -1,0 +1,43 @@
+/* wlogout — Catppuccin Mocha */
+
+* {
+    font-family: "JetBrainsMono Nerd Font", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    background-image: none;
+    box-shadow: none;
+}
+
+window {
+    background-color: rgba(17, 17, 27, 0.55);
+}
+
+button {
+    color: #cdd6f4;
+    background-color: rgba(49, 50, 68, 0.7);
+    border: 1px solid rgba(180, 190, 254, 0.15);
+    border-radius: 12px;
+    margin: 14px;
+    background-repeat: no-repeat;
+    background-position: center 40%;
+    background-size: 22%;
+    transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+button:focus,
+button:hover {
+    background-color: rgba(203, 166, 247, 0.22);
+    border-color: #cba6f7;
+    background-size: 26%;
+}
+
+#shutdown:hover, #shutdown:focus {
+    background-color: rgba(243, 139, 168, 0.25);
+    border-color: #f38ba8;
+}
+
+#lock     { background-image: url("/usr/share/wlogout/icons/lock.png"); }
+#logout   { background-image: url("/usr/share/wlogout/icons/logout.png"); }
+#suspend  { background-image: url("/usr/share/wlogout/icons/suspend.png"); }
+#reboot   { background-image: url("/usr/share/wlogout/icons/reboot.png"); }
+#shutdown { background-image: url("/usr/share/wlogout/icons/shutdown.png"); }

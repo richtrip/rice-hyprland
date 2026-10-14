@@ -1,0 +1,49 @@
+/* SwayNC — Catppuccin Mocha
+   Builds on the stock theme and only swaps the colours and shapes. */
+
+@import url("file:///etc/xdg/swaync/style.css");
+
+:root {
+  --cc-bg: rgba(30, 30, 46, 0.78);
+  --noti-border-color: rgba(180, 190, 254, 0.18);
+  --noti-bg: 49, 50, 68;
+  --noti-bg-alpha: 0.85;
+  --noti-bg-darker: rgb(24, 24, 37);
+  --noti-bg-hover: rgb(69, 71, 90);
+  --noti-bg-focus: rgba(69, 71, 90, 0.6);
+  --noti-close-bg: rgb(69, 71, 90);
+  --noti-close-bg-hover: rgb(243, 139, 168);
+  --text-color: rgb(205, 214, 244);
+  --text-color-disabled: rgb(108, 112, 134);
+  --bg-selected: rgb(203, 166, 247);
+  --border-radius: 8px;
+  --font-size-body: 14px;
+  --font-size-summary: 15px;
+}
+
+* {
+  font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+}
+
+.control-center {
+  border: 1px solid rgba(180, 190, 254, 0.18);
+  border-radius: 9px;
+}
+
+.notification .summary {
+  color: rgb(203, 166, 247);
+}
+
+.widget-title > button {
+  border-radius: 5px;
+  background: rgba(243, 139, 168, 0.18);
+  color: rgb(243, 139, 168);
+}
+
+.widget-title > button:hover {
+  background: rgba(243, 139, 168, 0.35);
+}
+
+.widget-dnd > switch:checked {
+  background: rgb(203, 166, 247);
+}
