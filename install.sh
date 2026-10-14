@@ -236,13 +236,43 @@ fi
 # supported by Anthropic. Ships the `claude-desktop-unofficial` package that the
 # payload/applications/claude-desktop-unofficial.desktop override targets.
 CLAUDE_DESKTOP_REPO_URL="https://pkg.claude-desktop-debian.dev/rpm/claude-desktop-unofficial.repo"
+CLAUDE_DESKTOP_KEY_URL="https://pkg.claude-desktop-debian.dev/KEY.gpg"   # same key the project's APT docs use
 CLAUDE_DESKTOP_REPO_FILE="/etc/yum.repos.d/claude-desktop-unofficial.repo"
 
+# Make sure a downloaded .repo file verifies package signatures against the project's key:
+# adds gpgkey= if missing, and gpgcheck=1 if missing or set to 0. Operates on a local file.
+harden_repo_file() {
+    local f="$1"
+    if ! grep -q '^gpgkey=' "$f"; then
+        sed -i "0,/^\[.*\]/s|^\[.*\]|&\ngpgkey=${CLAUDE_DESKTOP_KEY_URL}|" "$f"
+    fi
+    if grep -q '^gpgcheck=0' "$f"; then
+        warn "Repo file set gpgcheck=0; changing to gpgcheck=1 so packages must be signed."
+        sed -i 's/^gpgcheck=0/gpgcheck=1/' "$f"
+    elif ! grep -q '^gpgcheck=' "$f"; then
+        sed -i "0,/^\[.*\]/s|^\[.*\]|&\ngpgcheck=1|" "$f"
+    fi
+}
+
 install_claude_desktop() {
-    local repo
+    local repo key
     repo="$(mktemp --suffix=.repo)"
-    TMP_FILES+=("$repo")
+    key="$(mktemp --suffix=.gpg)"
+    TMP_FILES+=("$repo" "$key")
+
+    # Signing key: no fingerprint is published by the project, so show it and ask (trust-on-first-use).
+    curl -fsSL "$CLAUDE_DESKTOP_KEY_URL" -o "$key" || return 1
+    if command -v gpg >/dev/null 2>&1; then
+        echo "Signing key downloaded from $CLAUDE_DESKTOP_KEY_URL:"
+        gpg --show-keys --with-fingerprint "$key" || return 1
+    else
+        warn "gpg not found — cannot display the key fingerprint."
+    fi
+    confirm "Import this key into the RPM keyring and trust it for this repo?" || return 1
+    sudo rpm --import "$key" || return 1
+
     curl -fsSL "$CLAUDE_DESKTOP_REPO_URL" -o "$repo" || return 1
+    harden_repo_file "$repo"
     if [[ -e "$CLAUDE_DESKTOP_REPO_FILE" ]]; then
         warn "Backing up existing $CLAUDE_DESKTOP_REPO_FILE -> ${CLAUDE_DESKTOP_REPO_FILE}.bak-$TS"
         sudo mv "$CLAUDE_DESKTOP_REPO_FILE" "${CLAUDE_DESKTOP_REPO_FILE}.bak-$TS" || return 1
