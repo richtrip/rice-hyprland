@@ -1,7 +1,39 @@
 # hyprland-rice
 
 Richard's Hyprland + Waybar + Rofi desktop rice, packaged from his Fedora 44 + NVIDIA
-(RTX 2080 Super) machine ("KILLER") so it can be reproduced on another box.
+(RTX 2080 Super) machine ("KILLER") so it can be reproduced on another box. It's a
+Catppuccin Mocha–themed Wayland desktop: Hyprland as the compositor, a floating Waybar
+top panel, Rofi for app/window launching, SwayNotificationCenter for notifications,
+wlogout for the power menu, and a handful of `Super`-key dropdown "scratchpad" terminals
+(Claude CLI, Discord, Spotify, WhatsApp Web) that hide/show instead of closing.
+
+This repo is both the config files themselves (so you can read or fork them) and an
+installer that reproduces the whole setup — packages included — on a new Fedora machine.
+
+## Quick start
+
+**Prerequisites:** a Fedora (dnf-based) machine, a regular user with `sudo`, and an
+internet connection (the installer fetches RPM Fusion, a COPR, and a font over the network).
+
+Two equivalent ways to install, pick whichever's easier:
+
+```sh
+# Option A — clone and run
+git clone https://github.com/richtrip/rice-hyprland.git
+cd rice-hyprland
+./install.sh
+
+# Option B — just grab the prebuilt tarball, no git needed
+curl -LO https://github.com/richtrip/rice-hyprland/raw/main/dist/hyprland-rice.tar.gz
+tar xzf hyprland-rice.tar.gz
+cd hyprland-rice
+./install.sh
+```
+
+`install.sh` asks for confirmation before it does anything, installs what it can via
+`sudo dnf`, and backs up (never deletes) any existing config it would overwrite. When
+it finishes, log out and pick the Hyprland session at your login manager (rebooting
+first if it installed the NVIDIA driver).
 
 ## Layout
 
