@@ -20,7 +20,7 @@ if hyprctl clients -j | jq -e --arg c "$CLASS" '.[] | select(.class == $c)' >/de
     # Only showing (not hiding) needs an explicit window focus grab.
     [ "$WAS_VISIBLE" = "false" ] && focus_it
 else
-    hyprctl dispatch "hl.dsp.exec_cmd(\"kitty --class $CLASS --title claude -e tmux new-session -A -s claude /home/user/.local/bin/claude\")"
+    hyprctl dispatch "hl.dsp.exec_cmd(\"kitty --class $CLASS --title claude -e tmux new-session -A -s claude $HOME/.local/bin/claude\")"
     hyprctl dispatch 'hl.dsp.focus({monitor = "DP-2"})'
     hyprctl dispatch "hl.dsp.workspace.toggle_special(\"claude\")"
     sleep 0.3

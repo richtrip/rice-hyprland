@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs the Hyprland/Waybar/Rofi rice (packaged from user's Fedora 44 box)
+# Installs the Hyprland/Waybar/Rofi rice (packaged from a Fedora 44 desktop)
 # onto a new machine. Run this from inside the extracted archive directory:
 #   tar xzf hyprland-rice.tar.gz && cd hyprland-rice && ./install.sh
 #

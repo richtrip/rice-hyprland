@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # DESKTOP-ONLY. Refreshes payload/ in this repo from the live configs on the machine
-# you run it on. Only meaningful on the actual rice machine (user's Fedora/Hyprland
-# box) — running this anywhere else (including a cloud sandbox) will overwrite payload/
+# you run it on. Only meaningful on the actual rice machine (the Fedora/Hyprland
+# desktop) — running this anywhere else (including a cloud sandbox) will overwrite payload/
 # with that machine's own unrelated home directory contents, or just fail outright.
 #
 # After running this, `git diff` to see what changed, then commit, then run
