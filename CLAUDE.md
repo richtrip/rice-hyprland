@@ -24,13 +24,16 @@ the release tarball (see `.github/workflows/release.yml` below); nothing here is
   (reproducible output; `dist/` is git-ignored).
   Use it to sanity-check that the archive builds; do not commit its output.
 - `.github/workflows/release.yml` — CI. On PRs/pushes to `main` it runs `bash -n` over
-  the shell scripts and builds the tarball. Pushing a `v*` tag builds
-  `hyprland-rice.tar.gz` + `SHA256SUMS` and publishes them as a GitHub Release; the
+  the shell scripts and builds the tarball. A `v*` tag push, or the
+  manual "Run workflow" button (on `main`; auto-bumps the highest `vX.Y.Z` tag by
+  patch/minor/major, creates the tag + release on GitHub's side, optional `delete_release`
+  input removes an old release), builds `hyprland-rice.tar.gz` + `SHA256SUMS` and publishes
+  them as a GitHub Release; the
   README's download link targets `/releases/latest/download/hyprland-rice.tar.gz`.
   The tarball is **not** tracked in git (`dist/` is git-ignored) — there is nothing to
   rebuild or commit after editing `payload/`, `install.sh` or `README.md`. Keep the
   asset name `hyprland-rice.tar.gz` stable or the README link breaks. Cutting a release
-  is the user's call: don't push tags unless asked.
+  is the user's call: don't push tags or trigger the release workflow unless asked.
 
 ## Critical gotchas when editing payload/config/hypr/hyprland.lua
 

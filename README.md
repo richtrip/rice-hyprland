@@ -166,15 +166,19 @@ git push
 
 ## Publishing a release
 
-The tarball is built by CI, not committed. After merging to `main`, tag it:
+The tarball is built by CI, not committed. Once your changes are merged to `main`:
 
-```sh
-git tag v1.1.0 && git push origin v1.1.0
-```
+1. Open the repo's **Actions** tab → **Build and release** → **Run workflow** (branch: `main`).
+2. Pick how to bump the version — `patch` (default, v1.0.1 → v1.0.2), `minor` or `major`.
+   The workflow finds the highest existing `vX.Y.Z` tag and works out the next one itself.
+3. Optionally type an old release tag (e.g. `v1.0.0`) into **delete_release** to remove
+   that release and its tag once the new one is published.
 
-`.github/workflows/release.yml` then builds `hyprland-rice.tar.gz` plus a `SHA256SUMS` file
-and attaches them to a new GitHub Release, which the download link at the top of this page
-always points to. (The link has nothing to serve until the first release exists.)
+One run does everything: builds `hyprland-rice.tar.gz` plus a `SHA256SUMS` file, creates the
+tag and the GitHub Release, and attaches both files. The download link at the top of this
+page always points to the newest release. (Pushing a `vX.Y.Z` tag yourself works too and
+triggers the same build.)
+
 To test the archive locally, run `./scripts/build-dist.sh` — output lands in the
 git-ignored `dist/`.
 
