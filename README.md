@@ -64,6 +64,10 @@ from there — same content either way.
 - Downloads the JetBrainsMono Nerd Font (pinned release tag, needs internet) — it's
   fetched rather than vendored so this repo and tarball stay well under GitHub's 100M
   per-file push limit (the font alone is ~230M uncompressed)
+- Optionally (each behind its own prompt) installs the F9-F12 scratchpad dependencies:
+  the Discord, Spotify and Google Chrome Flatpaks (user installation from Flathub, no
+  sudo) and the Claude CLI via Anthropic's official installer (`https://claude.ai/install.sh`,
+  downloaded then run). Run `claude` once afterwards to log in.
 - Backs up anything it would overwrite (`<path>.bak-<timestamp>`) instead of deleting it
 
 Dark GTK theme and the Papirus-Dark icon theme aren't restored by install.sh at all —
@@ -96,11 +100,8 @@ sudo snapper -c home create-config /home
 sudo sed -i 's/^ALLOW_USERS=.*/ALLOW_USERS="richard"/' /etc/snapper/configs/root /etc/snapper/configs/home
 ```
 
-**Scratchpad apps and the OneDrive module.** The F9/F10/F11 toggles launch Flatpaks
-(`com.discordapp.Discord`, `com.spotify.Client`, `com.google.Chrome` for WhatsApp Web) and
-F12 runs the Claude CLI from `~/.local/bin/claude`; none of those are installed by
-`install.sh` (Flatpak remotes and a third-party CLI install are left to you). The Waybar
-OneDrive module likewise needs the `onedrive` client running as a systemd user service.
+**OneDrive module.** The Waybar OneDrive module needs the abraunegg `onedrive` client
+running as a systemd user service; `install.sh` doesn't set that up.
 
 **Claude Desktop.** Comes from a third-party repo (`pkg.claude-desktop-debian.dev`),
 not RPM Fusion or the Hyprland COPR, so it's intentionally left out of the automated
@@ -118,7 +119,7 @@ pavucontrol network-manager-applet
 qt5-qtwayland qt6-qtwayland nwg-look
 papirus-icon-theme jetbrains-mono-fonts fontawesome-fonts google-noto-sans-fonts
 unzip
-nautilus btop tmux jq xrandr xdg-utils gtk3 python3 wireplumber nm-connection-editor
+flatpak nautilus btop tmux jq xrandr xdg-utils gtk3 python3 wireplumber nm-connection-editor
 ```
 
 Fedora package names drift between releases — `install.sh` reports (but doesn't abort
