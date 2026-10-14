@@ -14,8 +14,8 @@
 >
 > Fedora (dnf) only. See [Quick start](#quick-start) for prerequisites.
 
-User's Hyprland + Waybar + Rofi desktop rice, packaged from his Fedora 44 + NVIDIA
-(GPU) machine ("HOSTNAME") so it can be reproduced on another box. It's a
+A Hyprland + Waybar + Rofi desktop rice, packaged from a Fedora 44 + NVIDIA desktop
+so it can be reproduced on another box. It's a
 Catppuccin Mocha–themed Wayland desktop: Hyprland as the compositor, a floating Waybar
 top panel, Rofi for app/window launching, SwayNotificationCenter for notifications,
 wlogout for the power menu, and a handful of `Super`-key dropdown "scratchpad" terminals
@@ -108,7 +108,7 @@ Install it separately (`sudo dnf group install "GNOME Desktop"` or similar) if y
 the same fallback.
 
 **Snapper (btrfs snapshots).** The original setup has snapper tracking two configs,
-`root` (on `/`) and `home` (a separate 3-disk btrfs RAID0 array mounted at `/home`).
+`root` (on `/`) and `home` (a separate btrfs filesystem mounted at `/home`).
 This only makes sense if the new machine's filesystem layout actually matches — don't
 blindly run this on a non-btrfs or differently-partitioned system. If it does match:
 
@@ -116,7 +116,7 @@ blindly run this on a non-btrfs or differently-partitioned system. If it does ma
 sudo dnf install snapper python3-dnf-plugin-snapper
 sudo snapper -c root create-config /
 sudo snapper -c home create-config /home
-sudo sed -i 's/^ALLOW_USERS=.*/ALLOW_USERS="user"/' /etc/snapper/configs/root /etc/snapper/configs/home
+sudo sed -i "s/^ALLOW_USERS=.*/ALLOW_USERS=\"$USER\"/" /etc/snapper/configs/root /etc/snapper/configs/home
 ```
 
 **OneDrive module.** The Waybar OneDrive module needs the abraunegg `onedrive` client
